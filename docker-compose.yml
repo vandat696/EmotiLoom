@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # Dịch vụ Database 
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: emotiloom_db
+      MYSQL_ROOT_PASSWORD: rootpassword # Mật khẩu của bạn
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Dịch vụ Backend (Node.js)
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    env_file: .env
+    depends_on:
+      - db
+
+volumes:
+  db_data:
