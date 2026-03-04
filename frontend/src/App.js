@@ -8,12 +8,13 @@ function App() {
   const [authData, setAuthData] = useState({ username: '', password: '' });
   const [diaryText, setDiaryText] = useState('');
   const [result, setResult] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL;
 
   // Hàm xử lý chung cho cả Đăng ký và Đăng nhập
   const handleAuth = async () => {
     const endpoint = isRegisterMode ? 'register' : 'login';
     try {
-      const res = await axios.post(`http://localhost:5000/api/auth/${endpoint}`, authData);
+      const res = await axios.post(`${API_URL}/api/auth/${endpoint}`, authData);
       
       if (isRegisterMode) {
         alert("Đăng ký thành công! Giờ cậu hãy đăng nhập nhé.");
@@ -31,7 +32,7 @@ function App() {
   const handlePostDiary = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/diary', 
+      const res = await axios.post(`${API_URL}/api/diary`, 
         { content: diaryText },
         { headers: { Authorization: `Bearer ${token}` } }
       );
