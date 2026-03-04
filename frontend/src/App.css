@@ -36,3 +36,60 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* Các style cũ giữ nguyên, thêm các phần dưới đây */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-form input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.switch-text {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.switch-text span {
+  color: #40916c;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logout-btn {
+  width: auto;
+  margin-top: 0;
+  padding: 8px 15px;
+  background-color: #ff4d4d;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background-color: #cc0000;
+}
+
+.main-btn {
+  /* Đây chính là style của button cũ */
+  background-color: #40916c;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}

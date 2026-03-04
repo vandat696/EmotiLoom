@@ -16,11 +16,14 @@ class DiaryController {
             
             const result = await model.generateContent(prompt);
             const response = await result.response;
-            const analysis = JSON.parse(response.text().replace(/```json|```/g, "").trim());
+            const analysis = JSON.parse(response.text());
 
-            // Lưu vào DB bằng lớp Database
-            const sql = "INSERT INTO diary_logs (content, sentiment, score, advice) VALUES (?, ?, ?, ?)";
-            await db.query(sql, [content, analysis.sentiment, analysis.score, analysis.advice]);
+            // Lấy ID người dùng từ req.user (do Middleware cung cấp)
+            const userId = req.user.id; 
+
+            const sql = "INSERT INTO diary_logs (content, sentiment, score, advice, user_id) VALUES (?, ?, ?, ?, ?)";
+            await db.query(sql, [content, analysis.sentiment, analysis.score, analysis.advice, userId]);
+
 
             res.json({ success: true, analysis });
         } catch (error) {
