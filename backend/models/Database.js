@@ -5,9 +5,11 @@ class Database {
         if (!Database.instance) {
             this.connection = mysql.createPool({
                 host: process.env.DB_HOST || 'db',
+                port: process.env.DB_PORT || 3306, 
                 user: process.env.DB_USER || 'root',
                 password: process.env.DB_PASS || 'rootpassword',
-                database: process.env.DB_NAME || 'emotiloom_db'
+                database: process.env.DB_NAME || 'emotiloom_db',
+                ssl: { rejectUnauthorized: false }
             }).promise();
             Database.instance = this;
         }
