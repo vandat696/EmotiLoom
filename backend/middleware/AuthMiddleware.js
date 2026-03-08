@@ -22,4 +22,4 @@ class AuthMiddleware {
     }
 }
 
-module.exports = AuthMiddleware;
+module.exports = AuthMiddleware.verifyToken;

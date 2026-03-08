@@ -8,13 +8,20 @@ class AuthController {
     }
 
     async register(req, res) {
-        const { username, password } = req.body;
+        const { username, password, role } = req.body;
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
-            await User.create(username, hashedPassword);
+            // Chỉ cho phép role là 'student' hoặc 'counselor', mặc định là 'student'
+            const validRole = role === 'counselor' ? 'counselor' : 'student';
+            await User.create(username, hashedPassword, validRole);
             res.json({ success: true, message: "Đăng ký thành công!" });
         } catch (error) {
-            res.status(500).json({ error: "Tên đăng nhập đã tồn tại!" });
+            console.error('Register error:', error);
+            if (error.code === 'ER_DUP_ENTRY') {
+                res.status(400).json({ error: "Tên đăng nhập đã tồn tại!" });
+            } else {
+                res.status(500).json({ error: error.message });
+            }
         }
     }
 
@@ -27,12 +34,12 @@ class AuthController {
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) return res.status(401).json({ error: "Sai mật khẩu rồi!" });
 
-            // Tạo token để ghi nhớ đăng nhập
             const token = jwt.sign({ id: user.id, role: user.role }, this.secret, { expiresIn: '1d' });
-            
-            res.json({ success: true, token, user: { username: user.username, role: user.role } });
+
+            res.json({ success: true, token, user: { id: user.id, username: user.username, role: user.role } });
         } catch (error) {
-            res.status(500).json({ error: "Lỗi đăng nhập" });
+            console.error('Login error:', error);
+            res.status(500).json({ error: error.message });
         }
     }
 }
