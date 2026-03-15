@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 
 const API = process.env.REACT_APP_API_URL;
@@ -24,21 +24,21 @@ export default function MessageChat({ appointmentId, otherUserName, currentUser,
     }, 2000); // Load mỗi 2 giây
     
     return () => clearInterval(interval); // Cleanup khi unmount
-  }, [appointmentId]);
+  }, [appointmentId, loadMessage]);
 
   // Scroll to bottom khi có tin nhắn mới
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async () => {
     try {
       const res = await api.get(`/api/messages/${appointmentId}`);
       setMessages(res.data.messages || []);
     } catch (err) {
       console.error('Load messages error:', err);
     }
-  };
+  }, [appointmentId]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
