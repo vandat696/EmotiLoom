@@ -24,7 +24,7 @@ export default function MessageChat({ appointmentId, otherUserName, currentUser,
     }, 2000); // Load mỗi 2 giây
     
     return () => clearInterval(interval); // Cleanup khi unmount
-  }, [appointmentId, loadMessage]);
+  }, [appointmentId, loadMessages]);
 
   // Scroll to bottom khi có tin nhắn mới
   useEffect(() => {
