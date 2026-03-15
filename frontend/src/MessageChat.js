@@ -15,6 +15,15 @@ export default function MessageChat({ appointmentId, otherUserName, currentUser,
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
 
+  const loadMessages = useCallback(async () => {
+    try {
+      const res = await api.get(`/api/messages/${appointmentId}`);
+      setMessages(res.data.messages || []);
+    } catch (err) {
+      console.error('Load messages error:', err);
+    }
+  }, [appointmentId]);
+
   // Auto-reload messages mỗi 2 giây
   useEffect(() => {
     if (!appointmentId) return;
@@ -30,15 +39,6 @@ export default function MessageChat({ appointmentId, otherUserName, currentUser,
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  const loadMessages = useCallback(async () => {
-    try {
-      const res = await api.get(`/api/messages/${appointmentId}`);
-      setMessages(res.data.messages || []);
-    } catch (err) {
-      console.error('Load messages error:', err);
-    }
-  }, [appointmentId]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
