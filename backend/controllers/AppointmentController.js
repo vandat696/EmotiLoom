@@ -74,9 +74,12 @@ class AppointmentController {
             let rows;
             if (role === 'student') {
                 [rows] = await db.query(`
-                    SELECT a.*, cp.full_name as counselor_name, cp.specialty
+                    SELECT a.*, 
+                           COALESCE(cp.full_name, u.username) as counselor_name, 
+                           cp.specialty
                     FROM appointments a
-                    JOIN counselor_profiles cp ON a.counselor_id = cp.user_id
+                    LEFT JOIN users u ON a.counselor_id = u.id
+                    LEFT JOIN counselor_profiles cp ON a.counselor_id = cp.user_id
                     WHERE a.student_id = ?
                     ORDER BY a.appointment_date DESC, a.appointment_time DESC
                 `, [userId]);

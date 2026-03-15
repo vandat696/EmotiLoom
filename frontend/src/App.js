@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
+import MessageChat from './MessageChat';
 
 const API = process.env.REACT_APP_API_URL;
 const api = axios.create({ baseURL: API });
@@ -298,12 +299,13 @@ function AIChatPage() {
 }
 
 // ─── COUNSELOR LIST (for students) ───────────────────────────────────────────
-function CounselorPage() {
+function CounselorPage({ user }) {
   const [counselors, setCounselors] = useState([]);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ date: '', time: '', note: '' });
   const [myAppointments, setMyAppointments] = useState([]);
   const [view, setView] = useState('list');
+  const [openChats, setOpenChats] = useState([]); // Array chứa nhiều chats đang mở
 
   useEffect(() => { loadCounselors(); loadMyAppointments(); }, []);
 
@@ -360,13 +362,27 @@ function CounselorPage() {
         <div className="appointments-simple">
           {myAppointments.length === 0 ? <div className="empty-state">📭 Chưa có lịch hẹn nào</div>
             : myAppointments.map(a => (
-              <div key={a.id} className="appointment-item">
+              <div 
+                key={a.id} 
+                className="appointment-item"
+                onClick={() => {
+                  if (a.status === 'confirmed') {
+                    // Kiểm tra xem appointment này đã mở chưa
+                    const isAlreadyOpen = openChats.some(chat => chat.id === a.id);
+                    if (!isAlreadyOpen) {
+                      setOpenChats(prev => [...prev, a]); // Thêm vào danh sách
+                    }
+                  }
+                }}
+                style={{ cursor: a.status === 'confirmed' ? 'pointer' : 'default' }}
+              >
                 <div className="appt-info">
                   <span className="appt-name">👩‍⚕️ {a.counselor_name}</span>
                   <span className="appt-datetime">📅 {new Date(a.appointment_date).toLocaleDateString('vi-VN')} lúc {a.appointment_time?.slice(0, 5)}</span>
                   {a.note && <span className="appt-note">📝 {a.note}</span>}
                 </div>
                 <span className={`status-tag ${a.status}`}>{statusLabel[a.status]}</span>
+                {a.status === 'confirmed' && <span style={{ marginLeft: 'auto', fontSize: '12px', color: '#667eea', fontWeight: 'bold' }}>💬 Click để chat</span>}
               </div>
             ))}
         </div>
@@ -392,6 +408,31 @@ function CounselorPage() {
           </div>
         </div>
       )}
+      {/* Multiple chat windows */}
+      {openChats.map((chat, index) => (
+        <div 
+          key={chat.id}
+          style={{
+            position: 'fixed',
+            right: 20 + (index * 340), // Stack từ phải sang trái
+            bottom: 20,
+            width: '320px',
+            height: '500px',
+            zIndex: 200 + index,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            borderRadius: '12px'
+          }}
+        >
+          <MessageChat 
+            appointmentId={chat.id}
+            otherUserName={chat.counselor_name}
+            currentUser={user}
+            onClose={() => {
+              setOpenChats(prev => prev.filter(c => c.id !== chat.id));
+            }}
+          />
+        </div>
+      ))}      
     </div>
   );
 }
@@ -408,8 +449,16 @@ function CounselorManagementPage({ user }) {
   const bottomRef = useRef(null);
 
   useEffect(() => { loadAppointments(); }, []);
-  useEffect(() => { if (selectedAppt) loadMessages(selectedAppt.id); }, [selectedAppt]);
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
+  // Auto-reload messages khi nhà tham vấn đang xem chat
+  useEffect(() => {
+    if (!selectedAppt) return;
+    
+    const interval = setInterval(() => {
+      loadMessages(selectedAppt.id);
+    }, 2000); // Load mỗi 2 giây
+    
+    return () => clearInterval(interval); // Cleanup
+  }, [selectedAppt]);  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
 
   const saveProfile = async () => {
     setProfileSaving(true);
@@ -439,7 +488,8 @@ function CounselorManagementPage({ user }) {
     if (!chatInput.trim() || !selectedAppt) return;
     try {
       await api.post('/api/messages', { appointment_id: selectedAppt.id, content: chatInput });
-      setChatInput(''); loadMessages(selectedAppt.id);
+      setChatInput('');
+      setTimeout(() => loadMessages(selectedAppt.id), 1000); // Delay 0.5s rồi load
     } catch { alert('Lỗi!'); }
   };
 
@@ -499,19 +549,19 @@ function CounselorManagementPage({ user }) {
         <div className="appointments-list">
           {confirmed.length === 0 ? <div className="empty-state">📭 Chưa có lịch hẹn nào</div>
             : confirmed.map(a => (
-              <div key={a.id} className={`appointment-item ${selectedAppt?.id === a.id ? 'selected' : ''}`} onClick={() => setSelectedAppt(a)}>
+              <div 
+                key={a.id}
+                className="appointment-item"
+                onClick={() => a.status === 'confirmed' && setSelectedAppt(a)}
+                style={{ cursor: a.status === 'confirmed' ? 'pointer' : 'default' }}
+              >
                 <div className="appt-info">
-                  <span className="appt-name">🎓 {a.student_username}</span>
-                  <span className="appt-datetime">📅 {new Date(a.appointment_date).toLocaleDateString('vi-VN')} lúc {a.appointment_time?.slice(0,5)}</span>
+                  <span className="appt-name">👩‍⚕️ {a.counselor_name}</span>
+                  <span className="appt-datetime">📅 {new Date(a.appointment_date).toLocaleDateString('vi-VN')} lúc {a.appointment_time?.slice(0, 5)}</span>
                   {a.note && <span className="appt-note">📝 {a.note}</span>}
                 </div>
-                <div className="appt-right">
-                  <span className={`status-tag ${a.status}`}>{statusLabel[a.status]}</span>
-                  {a.status === 'confirmed' && (
-                    <button className="appt-btn confirm" title="Đánh dấu hoàn thành"
-                      onClick={e => { e.stopPropagation(); updateStatus(a.id, 'completed'); }}>🎉</button>
-                  )}
-                </div>
+                <span className={`status-tag ${a.status}`}>{statusLabel[a.status]}</span>
+                {a.status === 'confirmed' && <span className="chat-hint">💬 Click để chat</span>}
               </div>
             ))}
         </div>
@@ -520,15 +570,33 @@ function CounselorManagementPage({ user }) {
             <div className="appt-chat-header">💬 Chat với {selectedAppt.student_username}</div>
             <div className="chat-messages">
               {chatMessages.length === 0 && <div className="chat-welcome"><span>💬</span><p>Bắt đầu trò chuyện!</p></div>}
-              {chatMessages.map((m, i) => (
-                <div key={i} className={`chat-bubble ${m.sender_role === user?.role ? 'user' : 'assistant'}`}>
-                  <div className="bubble-avatar">{m.sender_role === 'counselor' ? '👩‍⚕️' : '🎓'}</div>
-                  <div className="bubble-content">
-                    <span className="bubble-name">{m.sender_name}</span>
-                    <p>{m.content}</p>
+              {chatMessages.map((m, i) => {
+                const isOwn = m.sender_id === user?.id;
+                return (
+                    <div 
+                      key={i} 
+                      className={`chat-bubble ${isOwn ? 'own' : 'other'}`}
+                      onMouseMove={(e) => {
+                        const info = e.currentTarget.querySelector('.bubble-info');
+                        if (info) {
+                          // Lấy vị trí chuột và cộng thêm 15px để lệch sang phải/dưới
+                          info.style.left = (e.clientX + 15) + 'px';
+                          info.style.top = (e.clientY + 15) + 'px';
+                          }
+                      }}
+                    >
+                    <div className="bubble-info">
+                      <span className="bubble-sender">{isOwn ? (user?.username || 'Bạn') : m.sender_name}</span>
+                      {m.created_at && (
+                        <span className="bubble-time">
+                          {new Date(m.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      )}
+                    </div>
+                    <div className="bubble-content">{m.content}</div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               <div ref={bottomRef} />
             </div>
             <div className="chat-input-row">
@@ -744,7 +812,7 @@ export default function App() {
       case 'home': return <HomePage user={user} onNavigate={setPage} />;
       case 'diary': return <DiaryPage />;
       case 'ai': return <AIChatPage />;
-      case 'counselor': return <CounselorPage />;
+      case 'counselor': return <CounselorPage user={user} />;
       case 'counseling': return <CounselorManagementPage user={user} />;
       case 'community': return <CommunityPage user={user} />;
       default: return <HomePage user={user} onNavigate={setPage} />;
