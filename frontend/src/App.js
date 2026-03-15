@@ -835,7 +835,7 @@ export default function App() {
           <span className="user-avatar">{isCounselor ? '👩‍⚕️' : '👤'}</span>
           <span className="user-name">{user?.username}</span>
           <button className="logout-btn" onClick={handleLogout}><Icon d={Icons.logout} size={18} /></button>
-        </div>
+        </div> 
       </aside>
       <main className="main-content">{renderPage()}</main>
       <nav className="bottom-nav">
