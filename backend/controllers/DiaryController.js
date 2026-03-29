@@ -50,14 +50,33 @@ class DiaryController {
             // Tạo title mặc định nếu không có
             const finalTitle = title || content.substring(0, 100);
 
-            const sql = `INSERT INTO diaries (user_id, title, content, mood_emoji, mood_score, sentiment, ai_score, ai_advice) 
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-            const [rows] = await db.query(sql, [
+            // Thử insert với title, nếu fail thì insert mà không có title
+            let sql = `INSERT INTO diaries (user_id, title, content, mood_emoji, mood_score, sentiment, ai_score, ai_advice) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+            let params = [
                 userId, finalTitle, content, mood_emoji || null, mood_score || null,
                 analysis.sentiment, analysis.score, analysis.advice
-            ]);
-
-            res.json({ success: true, diary_id: rows.insertId, analysis });
+            ];
+            
+            try {
+                const [rows] = await db.query(sql, params);
+                res.json({ success: true, diary_id: rows.insertId, analysis });
+            } catch (titleError) {
+                // Nếu cột title không tồn tại, insert mà không có title
+                if (titleError.message.includes('Unknown column') && titleError.message.includes('title')) {
+                    console.log('⚠️  Column title not found, inserting without title');
+                    sql = `INSERT INTO diaries (user_id, content, mood_emoji, mood_score, sentiment, ai_score, ai_advice) 
+                           VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                    params = [
+                        userId, content, mood_emoji || null, mood_score || null,
+                        analysis.sentiment, analysis.score, analysis.advice
+                    ];
+                    const [rows] = await db.query(sql, params);
+                    res.json({ success: true, diary_id: rows.insertId, analysis });
+                } else {
+                    throw titleError;
+                }
+            }
         } catch (error) {
             console.error('DiaryController.create error:', error);
             res.status(500).json({ error: error.message });
