@@ -116,6 +116,7 @@ class AdminController {
                 SELECT sentiment, COUNT(*) as count
                 FROM diaries
                 WHERE sentiment IS NOT NULL
+                AND sentiment != ''
                 AND MONTH(created_at) = MONTH(NOW())
                 AND YEAR(created_at) = YEAR(NOW())
                 GROUP BY sentiment
@@ -124,6 +125,11 @@ class AdminController {
             `);
             
             const total = results.reduce((sum, r) => sum + r.count, 0);
+            
+            // Nếu không có dữ liệu
+            if (total === 0) {
+                return res.json({ success: true, sentiments: [] });
+            }
             
             const sentiments = results.map(r => ({
                 sentiment: r.sentiment,
@@ -229,6 +235,7 @@ class AdminController {
                 SELECT sentiment, COUNT(*) as count
                 FROM diaries
                 WHERE sentiment IS NOT NULL
+                AND sentiment != ''
                 AND created_at >= ? AND created_at <= ?
                 GROUP BY sentiment
                 ORDER BY count DESC
@@ -242,11 +249,11 @@ class AdminController {
             }
             
             const total = sentiments.reduce((sum, s) => sum + s.count, 0);
-            const topSentiments = sentiments.map(s => ({
+            const topSentiments = total > 0 ? sentiments.map(s => ({
                 sentiment: s.sentiment,
                 count: s.count,
                 percentage: ((s.count / total) * 100).toFixed(1)
-            }));
+            })) : [];
             
             res.json({
                 success: true,

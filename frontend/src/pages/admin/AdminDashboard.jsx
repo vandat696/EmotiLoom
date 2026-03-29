@@ -156,20 +156,24 @@ export default function AdminDashboard({ userRole }) {
         <h3 style={{ color: '#333', marginTop: '0' }}>🏷️ Cảm Xúc Phổ Biến Nhất</h3>
         {sentiments && sentiments.length > 0 ? (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-            {sentiments.slice(0, 6).map((s, idx) => (
-              <div key={idx} style={{ padding: '12px', background: '#F5F5F5', borderRadius: '6px', borderLeft: '4px solid #667eea' }}>
-                <p style={{ margin: '0 0 8px', fontWeight: '600', color: '#333' }}>{s.sentiment}</p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ flex: 1, height: '20px', background: '#E0E0E0', marginRight: '8px', borderRadius: '2px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', background: '#667eea', width: `${s.percentage}%` }} />
+            {sentiments.slice(0, 6).map((s, idx) => {
+              const percentage = isNaN(parseFloat(s.percentage)) ? 0 : parseFloat(s.percentage);
+              return (
+                <div key={idx} style={{ padding: '12px', background: '#F5F5F5', borderRadius: '6px', borderLeft: '4px solid #667eea' }}>
+                  <p style={{ margin: '0 0 8px', fontWeight: '600', color: '#333' }}>{s.sentiment || 'Không xác định'}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ flex: 1, height: '20px', background: '#E0E0E0', marginRight: '8px', borderRadius: '2px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', background: '#667eea', width: `${percentage}%` }} />
+                    </div>
+                    <span style={{ fontWeight: '600', color: '#667eea', minWidth: '45px', textAlign: 'right' }}>{percentage.toFixed(1)}%</span>
                   </div>
-                  <span style={{ fontWeight: '600', color: '#667eea' }}>{s.percentage}%</span>
+                  <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#999' }}>{s.count} nhật ký</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
-          <p style={{ color: '#999' }}>Chưa có dữ liệu cảm xúc</p>
+          <p style={{ color: '#999' }}>📝 Chưa có dữ liệu cảm xúc trong tháng này</p>
         )}
       </div>
 
