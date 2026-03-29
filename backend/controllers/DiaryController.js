@@ -47,10 +47,13 @@ class DiaryController {
                 console.log('💾 Using fallback sentiment (no Gemini API)');
             }
 
+            // Tạo title mặc định nếu không có
+            const finalTitle = title || content.substring(0, 100);
+
             const sql = `INSERT INTO diaries (user_id, title, content, mood_emoji, mood_score, sentiment, ai_score, ai_advice) 
                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
             const [rows] = await db.query(sql, [
-                userId, title || null, content, mood_emoji || null, mood_score || null,
+                userId, finalTitle, content, mood_emoji || null, mood_score || null,
                 analysis.sentiment, analysis.score, analysis.advice
             ]);
 

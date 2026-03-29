@@ -562,6 +562,23 @@
   transition: border-color 0.3s;
 }
 
+.diary-title-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  margin-bottom: 16px;
+  transition: border-color 0.3s;
+}
+
+.diary-title-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
 .diary-editor textarea:focus {
   outline: none;
   border-color: #667eea;

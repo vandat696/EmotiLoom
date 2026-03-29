@@ -15,6 +15,7 @@ api.interceptors.request.use(cfg => {
 export default function DiaryPage({ userRole }) {
   // Setup all hooks BEFORE any conditionals
   const [diaries, setDiaries] = useState([]);
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -47,8 +48,8 @@ export default function DiaryPage({ userRole }) {
     if (!content.trim()) return alert('Hãy viết gì đó nhé!');
     setLoading(true);
     try {
-      await api.post('/api/diary', { content, mood_emoji: selectedMood?.emoji, mood_score: selectedMood?.score });
-      setContent(''); setSelectedMood(null); setView('history'); loadDiaries();
+      await api.post('/api/diary', { title, content, mood_emoji: selectedMood?.emoji, mood_score: selectedMood?.score });
+      setTitle(''); setContent(''); setSelectedMood(null); setView('history'); loadDiaries();
     } catch (err) { alert('Lỗi: ' + err.response?.data?.error); }
     setLoading(false);
   };
@@ -83,6 +84,13 @@ export default function DiaryPage({ userRole }) {
             </div>
           </div>
           <div className="diary-editor">
+            <input 
+              type="text" 
+              value={title} 
+              onChange={e => setTitle(e.target.value)}
+              placeholder="Tiêu đề nhật ký" 
+              className="diary-title-input"
+            />
             <textarea value={content} onChange={e => setContent(e.target.value)}
               placeholder="Hôm nay của bạn thế nào? Cứ viết thoải mái nhé... 🌸" rows={8} />
             <div className="diary-footer">
