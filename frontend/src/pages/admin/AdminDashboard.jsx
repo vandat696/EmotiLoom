@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const API = process.env.REACT_APP_API_URL;
@@ -22,7 +22,7 @@ export default function AdminDashboard({ userRole }) {
   const [toDate, setToDate] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const loadDashboard = async () => {
+  const loadDashboard = useCallback(async () => {
     setLoading(true);
     try {
       const [ov, md, tr, lms, sent, as, tc] = await Promise.all([
@@ -47,11 +47,11 @@ export default function AdminDashboard({ userRole }) {
       console.error('Error loading dashboard:', err);
       setLoading(false);
     }
-  };
+  }, [days]);
 
   useEffect(() => {
     loadDashboard();
-  }, [days]);
+  }, [loadDashboard]);
 
   const handleFilterByDate = async () => {
     if (!fromDate || !toDate) return alert('Vui lòng chọn khoảng thời gian');
