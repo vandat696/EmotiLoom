@@ -283,14 +283,14 @@ Nếu không có `GEMINI_API_KEY`, hệ thống tự động dùng fallback dự
 **Bước 1:** Clone dự án và tạo file `.env` ở thư mục gốc:
 
 ```env
-DB_HOST=db
-DB_PORT=3306
-DB_USER=root
-DB_PASS=rootpassword
-DB_NAME=emotiloom_db
-JWT_SECRET=your_jwt_secret_key
-GEMINI_API_KEY=your_gemini_api_key
-FRONTEND_URL=http://localhost:3001
+DB_HOST=...
+DB_PORT=...
+DB_USER=...
+DB_PASS=...
+DB_NAME=...
+JWT_SECRET=...
+GEMINI_API_KEY=...
+FRONTEND_URL=...
 PORT=5000
 ```
 
@@ -338,17 +338,7 @@ npm start
 
 ## 8. Hướng Dẫn Sử Dụng
 
-### 8.1 Tài Khoản Demo
-
-Hệ thống có sẵn các tài khoản demo để trình diễn:
-
-| Vai trò | Username | Password |
-|---|---|---|
-| Học sinh | `student1` | `123456` |
-| Nhà tham vấn | `counselor1` | `123456` |
-| Quản trị (Nhà trường) | `admin` | `123456` |
-
-### 8.2 Hướng Dẫn Dành Cho Học Sinh
+### 8.1 Hướng Dẫn Dành Cho Học Sinh
 
 **Đăng nhập:**
 1. Truy cập địa chỉ web EmotiLoom
@@ -387,7 +377,7 @@ Hệ thống có sẵn các tài khoản demo để trình diễn:
 3. Nhấn "Đăng bài" để chia sẻ cảm xúc hoặc đặt câu hỏi
 4. Like và bình luận để tương tác với cộng đồng
 
-### 8.3 Hướng Dẫn Dành Cho Nhà Tham Vấn
+### 8.2 Hướng Dẫn Dành Cho Nhà Tham Vấn
 
 **Quản lý lịch hẹn:**
 1. Đăng nhập bằng tài khoản nhà tham vấn
@@ -400,7 +390,7 @@ Hệ thống có sẵn các tài khoản demo để trình diễn:
 1. Vào "Cộng đồng" → nhấn "Đăng bài"
 2. Bài đăng của nhà tham vấn tự động được gắn tag "Chuyên gia"
 
-### 8.4 Hướng Dẫn Dành Cho Nhà Trường (Admin)
+### 8.3 Hướng Dẫn Dành Cho Nhà Trường (Admin)
 
 **Truy cập Dashboard:**
 1. Đăng nhập bằng tài khoản admin
