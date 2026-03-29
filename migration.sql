@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS counselor_profiles (
 CREATE TABLE IF NOT EXISTS diaries (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
+    title VARCHAR(255),
     content TEXT NOT NULL,
     mood_emoji VARCHAR(10),
     mood_score INT,

@@ -8,7 +8,7 @@ class DiaryController {
 
     // Tạo nhật ký mới + phân tích AI
     async create(req, res) {
-        const { content, mood_emoji, mood_score } = req.body;
+        const { title, content, mood_emoji, mood_score } = req.body;
         const userId = req.user.id;
 
         if (!content) return res.status(400).json({ error: 'Nội dung không được trống!' });
@@ -18,17 +18,17 @@ class DiaryController {
             Trả về JSON hợp lệ (không có markdown): {"sentiment": "tên cảm xúc tiếng Việt", "score": <số 1-10>, "advice": "lời khuyên ngắn tiếng Việt"}`;
 
             const result = await this.genAI.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: 'gemini-2.5-flash-lite',
                 contents: prompt,
             });
 
             const rawText = result.text.replace(/```json|```/g, '').trim();
             const analysis = JSON.parse(rawText);
 
-            const sql = `INSERT INTO diaries (user_id, content, mood_emoji, mood_score, sentiment, ai_score, ai_advice) 
-                         VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            const sql = `INSERT INTO diaries (user_id, title, content, mood_emoji, mood_score, sentiment, ai_score, ai_advice) 
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
             const [rows] = await db.query(sql, [
-                userId, content, mood_emoji || null, mood_score || null,
+                userId, title || null, content, mood_emoji || null, mood_score || null,
                 analysis.sentiment, analysis.score, analysis.advice
             ]);
 

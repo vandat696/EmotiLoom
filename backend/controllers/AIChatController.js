@@ -38,7 +38,7 @@ Người dùng: ${message}
 AI:`;
 
             const result = await this.genAI.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: 'gemini-2.5-flash-lite',
                 contents: systemPrompt,
             });
 
