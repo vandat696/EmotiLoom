@@ -7,10 +7,12 @@ const DiaryController = require('../controllers/DiaryController');
 const AIChatController = require('../controllers/AIChatController');
 const AppointmentController = require('../controllers/AppointmentController');
 const CommunityController = require('../controllers/CommunityController');
+const AdminController = require('../controllers/AdminController');
 
 // ── AUTH (không cần token) ────────────────────────────────────────────────────
 router.post('/auth/register', (req, res) => AuthController.register(req, res));
 router.post('/auth/login', (req, res) => AuthController.login(req, res));
+router.post('/auth/setup-initial-admin', (req, res) => AuthController.setupInitialAdmin(req, res));
 
 // ── DIARY (cần token) ─────────────────────────────────────────────────────────
 router.post('/diary', authMiddleware, (req, res) => DiaryController.create(req, res));
@@ -42,5 +44,15 @@ router.delete('/posts/:id', authMiddleware, (req, res) => CommunityController.de
 router.get('/posts/:post_id/comments', authMiddleware, (req, res) => CommunityController.getComments(req, res));
 router.post('/comments', authMiddleware, (req, res) => CommunityController.addComment(req, res));
 router.post('/likes', authMiddleware, (req, res) => CommunityController.toggleLike(req, res));
+
+// ── ADMIN DASHBOARD ───────────────────────────────────────────────────────────
+router.get('/admin/dashboard/overview', authMiddleware, (req, res) => AdminController.getDashboardOverview(req, res));
+router.get('/admin/dashboard/mood-distribution', authMiddleware, (req, res) => AdminController.getMoodDistribution(req, res));
+router.get('/admin/dashboard/mood-trending', authMiddleware, (req, res) => AdminController.getMoodTrending(req, res));
+router.get('/admin/dashboard/low-mood-students', authMiddleware, (req, res) => AdminController.getLowMoodStudents(req, res));
+router.get('/admin/dashboard/top-sentiments', authMiddleware, (req, res) => AdminController.getTopSentiments(req, res));
+router.get('/admin/dashboard/appointment-stats', authMiddleware, (req, res) => AdminController.getAppointmentStats(req, res));
+router.get('/admin/dashboard/top-counselors', authMiddleware, (req, res) => AdminController.getTopCounselors(req, res));
+router.get('/admin/dashboard/date-range', authMiddleware, (req, res) => AdminController.getStatsByDateRange(req, res));
 
 module.exports = router;

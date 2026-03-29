@@ -3,7 +3,13 @@ const { GoogleGenAI } = require('@google/genai');
 
 class AIChatController {
     constructor() {
-        this.genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        // Only initialize Gemini if API key is provided
+        if (process.env.GEMINI_API_KEY) {
+            this.genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        } else {
+            this.genAI = null;
+            console.warn('⚠️  GEMINI_API_KEY not set - AI chat disabled');
+        }
     }
 
     // Gửi tin nhắn và nhận phản hồi từ AI
@@ -26,7 +32,11 @@ class AIChatController {
                 `${h.role === 'user' ? 'Người dùng' : 'AI'}: ${h.content}`
             ).join('\n');
 
-            const systemPrompt = `Bạn là trợ lý tâm lý ảo của EmotiLoom, một ứng dụng hỗ trợ sức khỏe tâm thần cho học sinh. 
+            let aiReply;
+
+            // Use Gemini if available
+            if (this.genAI) {
+                const systemPrompt = `Bạn là trợ lý tâm lý ảo của EmotiLoom, một ứng dụng hỗ trợ sức khỏe tâm thần cho học sinh. 
 Hãy lắng nghe, đồng cảm và hỗ trợ người dùng một cách nhẹ nhàng, ấm áp. 
 Không đưa ra chẩn đoán y tế. Khuyến khích gặp nhà tham vấn nếu cần thiết.
 Trả lời bằng tiếng Việt, ngắn gọn và thân thiện.
@@ -37,12 +47,24 @@ ${historyText}
 Người dùng: ${message}
 AI:`;
 
-            const result = await this.genAI.models.generateContent({
-                model: 'gemini-2.5-flash-lite',
-                contents: systemPrompt,
-            });
+                const result = await this.genAI.models.generateContent({
+                    model: 'gemini-2.5-flash-lite',
+                    contents: systemPrompt,
+                });
 
-            const aiReply = result.text.trim();
+                aiReply = result.text.trim();
+            } else {
+                // Fallback responses when Gemini is not available
+                const fallbackResponses = [
+                    'Tôi hiểu cảm xúc của bạn. Hãy chia sẻ thêm về điều bạn đang cảm thấy.',
+                    'Cảm ơn bạn đã chia sẻ. Bạn có muốn nói thêm gì không?',
+                    'Điều đó nghe có vẻ khó khăn. Bạn đã thử tìm ai đó để nói chuyện chưa?',
+                    'Tôi ở đây để lắng nghe. Tiếp tục nói với tôi nhé.',
+                    'Tình cảnh bạn có vẻ phức tạp. Bạn có cần hỗ trợ từ nhà tham vấn không?',
+                ];
+                aiReply = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+                console.log('💬 Using fallback response (no Gemini API)');
+            }
 
             // Lưu cả 2 tin nhắn vào database
             await db.query(

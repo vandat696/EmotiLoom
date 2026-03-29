@@ -10,6 +10,7 @@ import AppointmentsPage from './pages/student/AppointmentsPage';
 import AIChatPage from './pages/shared/AIChatPage';
 import CommunityPage from './pages/shared/CommunityPage';
 import ManagementPage from './pages/counselor/ManagementPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 // Utils
 import { Icon, Icons } from './pages/constants';
@@ -55,6 +56,7 @@ export default function App() {
   if (!isLoggedIn) return <AuthPage onLogin={handleLogin} />;
 
   const isCounselor = userRole === 'counselor';
+  const isAdmin = userRole === 'admin';
   const studentNav = [
     { id: 'home', label: 'Trang chủ', icon: Icons.home },
     { id: 'diary', label: 'Nhật ký', icon: Icons.diary },
@@ -68,7 +70,11 @@ export default function App() {
     { id: 'ai', label: 'Chat AI', icon: Icons.ai },
     { id: 'community', label: 'Cộng đồng', icon: Icons.community },
   ];
-  const navItems = isCounselor ? counselorNav : studentNav;
+  const adminNav = [
+    { id: 'dashboard', label: 'Dashboard', icon: Icons.home },
+    { id: 'community', label: 'Cộng đồng', icon: Icons.community },
+  ];
+  const navItems = isAdmin ? adminNav : (isCounselor ? counselorNav : studentNav);
 
   const renderPage = () => {
     switch (page) {
@@ -77,8 +83,9 @@ export default function App() {
       case 'ai': return <AIChatPage />;
       case 'counselor': return <AppointmentsPage user={user} userRole={userRole} />;
       case 'counseling': return <ManagementPage user={user} userRole={userRole} />;
+      case 'dashboard': return <AdminDashboard userRole={userRole} />;
       case 'community': return <CommunityPage user={user} />;
-      default: return <HomePage user={user} userRole={userRole} onNavigate={setPage} />;
+      default: return isAdmin ? <AdminDashboard userRole={userRole} /> : <HomePage user={user} userRole={userRole} onNavigate={setPage} />;
     }
   };
 
@@ -86,8 +93,9 @@ export default function App() {
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-logo"><span>🌸</span><span>EmotiLoom</span></div>
+        {isAdmin && <div className="role-badge">⚙️ Quản Trị Viên</div>}
         {isCounselor && <div className="role-badge">👩‍⚕️ Tham vấn viên</div>}
-        {!isCounselor && <div className="role-badge">🎓 Học sinh</div>}
+        {!isCounselor && !isAdmin && <div className="role-badge">🎓 Học sinh</div>}
         <nav className="sidebar-nav">
           {navItems.map(item => (
             <button key={item.id} className={`nav-item ${page === item.id ? 'active' : ''}`} onClick={() => setPage(item.id)}>
@@ -96,7 +104,7 @@ export default function App() {
           ))}
         </nav>
         <div className="sidebar-user">
-          <span className="user-avatar">{isCounselor ? '👩‍⚕️' : '👤'}</span>
+          <span className="user-avatar">{isAdmin ? '⚙️' : (isCounselor ? '👩‍⚕️' : '👤')}</span>
           <span className="user-name">{user?.username}</span>
           <button className="logout-btn" onClick={handleLogout}><Icon d={Icons.logout} size={18} /></button>
         </div> 

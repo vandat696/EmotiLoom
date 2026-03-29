@@ -27,7 +27,20 @@ class AuthController {
 
     async login(req, res) {
         const { username, password } = req.body;
+        console.log('🔐 Login attempt:', { username, password });
         try {
+            // Admin hardcoded credentials for development/deployment
+            if (username === 'admin' && password === '123456') {
+                console.log('✅ Admin credentials matched!');
+                const token = jwt.sign({ id: 0, role: 'admin' }, this.secret, { expiresIn: '1d' });
+                return res.json({ 
+                    success: true, 
+                    token, 
+                    user: { id: 0, username: 'admin', role: 'admin' } 
+                });
+            }
+
+            // Regular user login from database
             const user = await User.findByUsername(username);
             if (!user) return res.status(404).json({ error: "Không tìm thấy người dùng" });
 
@@ -39,6 +52,51 @@ class AuthController {
             res.json({ success: true, token, user: { id: user.id, username: user.username, role: user.role } });
         } catch (error) {
             console.error('Login error:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    // 🔑 Secret endpoint to setup initial admin (use with ADMIN_SETUP_TOKEN)
+    async setupInitialAdmin(req, res) {
+        const { setupToken, adminPassword } = req.body;
+        const ENV_SETUP_TOKEN = process.env.ADMIN_SETUP_TOKEN;
+
+        console.log('🔐 Setup Admin attempt received');
+
+        // Verify secret token
+        if (!setupToken || setupToken !== ENV_SETUP_TOKEN) {
+            console.log('❌ Invalid or missing setup token');
+            return res.status(403).json({ error: 'Invalid setup token' });
+        }
+
+        // Validate password
+        if (!adminPassword || adminPassword.length < 6) {
+            return res.status(400).json({ error: 'Password must be at least 6 characters' });
+        }
+
+        try {
+            // Check if admin already exists
+            const [existingAdmin] = await User.findByUsername('admin');
+            if (existingAdmin) {
+                return res.status(409).json({ error: 'Admin user already exists' });
+            }
+
+            // Create admin user
+            const hashedPassword = await bcrypt.hash(adminPassword, 10);
+            await User.create('admin', hashedPassword, 'admin');
+
+            console.log('✅ Admin user created successfully');
+            res.json({ 
+                success: true, 
+                message: 'Admin user created successfully',
+                credentials: {
+                    username: 'admin',
+                    password: adminPassword,
+                    role: 'admin'
+                }
+            });
+        } catch (error) {
+            console.error('❌ Setup admin error:', error);
             res.status(500).json({ error: error.message });
         }
     }
