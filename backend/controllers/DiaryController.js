@@ -28,7 +28,7 @@ class DiaryController {
                 Trả về JSON hợp lệ (không có markdown): {"sentiment": "tên cảm xúc tiếng Việt", "score": <số 1-10>, "advice": "lời khuyên ngắn tiếng Việt"}`;
 
                 const result = await this.genAI.models.generateContent({
-                    model: 'gemini-3-flash',
+                    model: 'gemini-3-flash-preview',
                     contents: prompt,
                 });
 
