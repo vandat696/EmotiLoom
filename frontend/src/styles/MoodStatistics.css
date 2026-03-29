@@ -1,0 +1,246 @@
+.mood-statistics-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.stats-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.stats-period {
+  background: #F0F0F0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stats-loading,
+.stats-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 14px;
+}
+
+.stats-empty p {
+  margin: 0;
+}
+
+/* Summary Cards */
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-card:nth-child(2) {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+}
+
+.stat-card:nth-child(3) {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* Distribution Bar Chart */
+.stats-distribution {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #F9F9F9;
+  border-radius: 12px;
+}
+
+.stats-distribution h4,
+.stats-breakdown h4 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.distribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.distribution-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dist-label {
+  min-width: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+}
+
+.dist-bar-container {
+  flex: 1;
+  height: 24px;
+  background: #E0E0E0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dist-bar {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+  min-width: 4px;
+}
+
+.dist-stats {
+  min-width: 80px;
+  text-align: right;
+  font-size: 12px;
+  color: #666;
+}
+
+.percentage {
+  color: #999;
+  margin-left: 4px;
+}
+
+/* Mood Breakdown */
+.stats-breakdown {
+  padding: 20px;
+  background: #F9F9F9;
+  border-radius: 12px;
+}
+
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.breakdown-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #999;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.breakdown-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.breakdown-emoji {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.breakdown-info {
+  flex: 1;
+}
+
+.breakdown-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.breakdown-count {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mood-statistics-container {
+    padding: 15px;
+  }
+
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .stats-summary {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .stat-number {
+    font-size: 24px;
+  }
+
+  .distribution-item {
+    flex-wrap: wrap;
+  }
+
+  .dist-label {
+    min-width: 100%;
+    margin-bottom: 4px;
+  }
+
+  .dist-bar-container {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .breakdown-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}

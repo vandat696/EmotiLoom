@@ -86,6 +86,102 @@ class DiaryController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    // Lấy dữ liệu calendar cho tháng
+    async getCalendarData(req, res) {
+        const userId = req.user.id;
+        const { year, month } = req.query;
+        
+        // Mặc định lấy tháng hiện tại
+        const now = new Date();
+        const y = year ? parseInt(year) : now.getFullYear();
+        const m = month ? parseInt(month) : now.getMonth() + 1;
+
+        try {
+            // Lấy tất cả nhật ký trong tháng
+            const startDate = `${y}-${String(m).padStart(2, '0')}-01`;
+            const endDate = new Date(y, m, 0);
+            const endDateStr = `${y}-${String(m).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
+
+            const sql = `
+                SELECT DATE(created_at) as date, mood_score, created_at
+                FROM diaries
+                WHERE user_id = ? AND DATE(created_at) BETWEEN ? AND ?
+                ORDER BY created_at DESC
+            `;
+            const [rows] = await db.query(sql, [userId, startDate, endDateStr]);
+
+            // Lấy mood_score của nhật ký MỚI NHẤT trong mỗi ngày
+            const result = {};
+            rows.forEach(row => {
+                const dateStr = row.date || new Date(row.created_at).toISOString().split('T')[0];
+                // Chỉ lưu nếu chưa có (vì dữ liệu đã sort DESC, nên cái đầu tiên là mới nhất)
+                if (!result[dateStr] && row.mood_score) {
+                    result[dateStr] = row.mood_score;
+                }
+            });
+
+            res.json({ success: true, year: y, month: m, calendarData: result });
+        } catch (error) {
+            console.error('DiaryController.getCalendarData error:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
+    // Lấy thống kê mood của tháng
+    async getStatistics(req, res) {
+        const userId = req.user.id;
+        const { year, month } = req.query;
+
+        const now = new Date();
+        const y = year ? parseInt(year) : now.getFullYear();
+        const m = month ? parseInt(month) : now.getMonth() + 1;
+
+        try {
+            const startDate = new Date(y, m - 1, 1);
+            const endDate = new Date(y, m, 0, 23, 59, 59);
+
+            // Lấy tất cả nhật ký trong tháng
+            const sql = `
+                SELECT mood_score
+                FROM diaries
+                WHERE user_id = ? AND DATE(created_at) BETWEEN ? AND ?
+            `;
+            const [rows] = await db.query(sql, [userId, startDate.toISOString().split('T')[0], endDate.toISOString().split('T')[0]]);
+
+            // Đếm số ngày theo từng mức mood
+            const moodCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+            const uniqueDates = new Set();
+            let totalScore = 0;
+
+            rows.forEach(row => {
+                const date = new Date(row.created_at).toISOString().split('T')[0];
+                uniqueDates.add(date);
+                totalScore += row.mood_score || 0;
+                if (row.mood_score && row.mood_score >= 1 && row.mood_score <= 5) {
+                    moodCounts[row.mood_score]++;
+                }
+            });
+
+            const totalDays = uniqueDates.size;
+            const averageMood = totalDays > 0 ? (totalScore / rows.length).toFixed(2) : 0;
+
+            res.json({
+                success: true,
+                year: y,
+                month: m,
+                statistics: {
+                    totalDiaries: rows.length,
+                    totalDays: totalDays,
+                    averageMood: parseFloat(averageMood),
+                    moodDistribution: moodCounts
+                }
+            });
+        } catch (error) {
+            console.error('DiaryController.getStatistics error:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = new DiaryController();

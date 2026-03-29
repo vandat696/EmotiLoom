@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MOODS, Icon, Icons } from '../constants';
+import MoodCalendar from '../../components/MoodCalendar';
+import MoodStatistics from '../../components/MoodStatistics';
 
 const API = process.env.REACT_APP_API_URL;
 const api = axios.create({ baseURL: API });
@@ -26,6 +28,10 @@ export default function DiaryPage({ userRole }) {
 
   // ALL useEffect BEFORE conditional return
   useEffect(() => { loadDiaries(); }, []);
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
 
   // Role check - conditional RENDER after all hooks
   if (userRole !== 'student') {
@@ -60,8 +66,9 @@ export default function DiaryPage({ userRole }) {
         <p>{new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
       </div>
       <div className="tab-row">
-        <button className={`tab-btn ${view === 'write' ? 'active' : ''}`} onClick={() => setView('write')}>✍️ Viết mới</button>
-        <button className={`tab-btn ${view === 'history' ? 'active' : ''}`} onClick={() => setView('history')}>📚 Lịch sử ({diaries.length})</button>
+        <button className={`tab-btn ${view === 'write' ? 'active' : ''}`} onClick={() => setView('write')}>Viết mới</button>
+        <button className={`tab-btn ${view === 'history' ? 'active' : ''}`} onClick={() => setView('history')}>Lịch sử ({diaries.length})</button>
+        <button className={`tab-btn ${view === 'calendar' ? 'active' : ''}`} onClick={() => setView('calendar')}>Nhật kí cảm xúc</button>
       </div>
       {view === 'write' ? (
         <>
@@ -86,7 +93,7 @@ export default function DiaryPage({ userRole }) {
             </div>
           </div>
         </>
-      ) : (
+      ) : view === 'history' ? (
         <div className="diary-history">
           {diaries.length === 0 ? <div className="empty-state">📝 Chưa có nhật ký nào!</div>
             : diaries.map(d => (
@@ -102,7 +109,12 @@ export default function DiaryPage({ userRole }) {
               </div>
             ))}
         </div>
-      )}
+      ) : view === 'calendar' ? (
+        <>
+          <MoodCalendar diaries={diaries} />
+          <MoodStatistics diaries={diaries} year={currentYear} month={currentMonth} />
+        </>
+      ) : null}
     </div>
   );
 }

@@ -16,6 +16,8 @@ router.post('/auth/setup-initial-admin', (req, res) => AuthController.setupIniti
 
 // ── DIARY (cần token) ─────────────────────────────────────────────────────────
 router.post('/diary', authMiddleware, (req, res) => DiaryController.create(req, res));
+router.get('/diary/calendar', authMiddleware, (req, res) => DiaryController.getCalendarData(req, res));
+router.get('/diary/statistics', authMiddleware, (req, res) => DiaryController.getStatistics(req, res));
 router.get('/diary', authMiddleware, (req, res) => DiaryController.getAll(req, res));
 router.delete('/diary/:id', authMiddleware, (req, res) => DiaryController.delete(req, res));
 
