@@ -22,10 +22,6 @@ export default function AdminDashboard({ userRole }) {
   const [toDate, setToDate] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
-
   const loadDashboard = async () => {
     setLoading(true);
     try {
@@ -46,11 +42,16 @@ export default function AdminDashboard({ userRole }) {
       setSentiments(sent.data.sentiments || []);
       setAppointmentStats(as.data.stats);
       setTopCounselors(tc.data.counselors || []);
+      setLoading(false);
     } catch (err) {
       console.error('Error loading dashboard:', err);
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  useEffect(() => {
+    loadDashboard();
+  }, [days]);
 
   const handleFilterByDate = async () => {
     if (!fromDate || !toDate) return alert('Vui lòng chọn khoảng thời gian');
