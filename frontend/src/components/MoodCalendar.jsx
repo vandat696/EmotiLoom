@@ -1,5 +1,15 @@
+
 import React, { useState, useMemo } from 'react';
 import '../styles/MoodCalendar.css';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
+import SentimentNeutralIcon from '@mui/icons-material/SentimentNeutral';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CloseIcon from '@mui/icons-material/Close';
 
 // Định nghĩa 5 màu cho 5 mức mood
 const MOOD_COLORS = {
@@ -11,11 +21,11 @@ const MOOD_COLORS = {
 };
 
 const MOOD_LABELS = {
-  1: '😢 Rất tệ',
-  2: '😞 Tệ',
-  3: '😐 Bình thường',
-  4: '😊 Tốt',
-  5: '😄 Rất tốt'
+  1: { icon: <SentimentVeryDissatisfiedIcon style={{ color: '#FF6B6B' }} />, label: 'Rất tệ' },
+  2: { icon: <SentimentDissatisfiedIcon style={{ color: '#FFA500' }} />, label: 'Tệ' },
+  3: { icon: <SentimentNeutralIcon style={{ color: '#FFD700' }} />, label: 'Bình thường' },
+  4: { icon: <SentimentSatisfiedAltIcon style={{ color: '#90EE90' }} />, label: 'Tốt' },
+  5: { icon: <SentimentVerySatisfiedIcon style={{ color: '#4CAF50' }} />, label: 'Rất tốt' },
 };
 
 export default function MoodCalendar({ diaries = [] }) {
@@ -85,20 +95,21 @@ export default function MoodCalendar({ diaries = [] }) {
   return (
     <div className="mood-calendar-container">
       <div className="calendar-header">
-        <h3>📅 Lịch Cảm Xúc</h3>
+        <h3><CalendarMonthIcon style={{verticalAlign:'middle',marginRight:6}}/>Lịch Cảm Xúc</h3>
         <div className="calendar-controls">
-          <button onClick={handlePrevMonth}>←</button>
+          <button onClick={handlePrevMonth} title="Tháng trước"><ArrowBackIosNewIcon fontSize="small" /></button>
           <span className="month-name" onClick={handleToday}>{monthName}</span>
-          <button onClick={handleNextMonth}>→</button>
+          <button onClick={handleNextMonth} title="Tháng sau"><ArrowForwardIosIcon fontSize="small" /></button>
         </div>
       </div>
 
       {/* Legend */}
       <div className="mood-legend">
         {[1, 2, 3, 4, 5].map(score => (
-          <div key={score} className="legend-item">
+          <div key={score} className="legend-item" style={{display:'flex',alignItems:'center',gap:6}}>
             <div className="legend-color" style={{ backgroundColor: MOOD_COLORS[score] }}></div>
-            <span>{MOOD_LABELS[score]}</span>
+            {MOOD_LABELS[score].icon}
+            <span>{MOOD_LABELS[score].label}</span>
           </div>
         ))}
       </div>
@@ -139,7 +150,7 @@ export default function MoodCalendar({ diaries = [] }) {
       {selectedDate && (
         <div className="selected-date-info">
           <span>{selectedDate.toLocaleDateString('vi-VN', { weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric' })}</span>
-          <button onClick={() => setSelectedDate(null)}>✕</button>
+          <button onClick={() => setSelectedDate(null)} title="Đóng"><CloseIcon fontSize="small" /></button>
         </div>
       )}
     </div>

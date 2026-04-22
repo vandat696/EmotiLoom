@@ -1,12 +1,24 @@
+
 import React, { useMemo } from 'react';
 import '../styles/MoodStatistics.css';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
+import SentimentNeutralIcon from '@mui/icons-material/SentimentNeutral';
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import StarIcon from '@mui/icons-material/Star';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import NoteAltIcon from '@mui/icons-material/NoteAlt';
 
 const MOOD_LABELS = {
-  1: '😢 Rất tệ',
-  2: '😞 Tệ',
-  3: '😐 Bình thường',
-  4: '😊 Tốt',
-  5: '😄 Rất tốt'
+  1: { icon: <SentimentVeryDissatisfiedIcon style={{ color: '#FF6B6B' }} />, label: 'Rất tệ' },
+  2: { icon: <SentimentDissatisfiedIcon style={{ color: '#FFA500' }} />, label: 'Tệ' },
+  3: { icon: <SentimentNeutralIcon style={{ color: '#FFD700' }} />, label: 'Bình thường' },
+  4: { icon: <SentimentSatisfiedAltIcon style={{ color: '#90EE90' }} />, label: 'Tốt' },
+  5: { icon: <SentimentVerySatisfiedIcon style={{ color: '#4CAF50' }} />, label: 'Rất tốt' },
 };
 
 const MOOD_COLORS = {
@@ -80,13 +92,13 @@ export default function MoodStatistics({ diaries = [], year, month }) {
   return (
     <div className="mood-statistics-container">
       <div className="stats-header">
-        <h3>📊 Thống Kê Cảm Xúc</h3>
+        <h3><BarChartIcon style={{verticalAlign:'middle',marginRight:6}}/>Thống Kê Cảm Xúc</h3>
         <span className="stats-period">{monthName}</span>
       </div>
 
       {totalDays === 0 ? (
         <div className="stats-empty">
-          <p>📝 Chưa có dữ liệu trong tháng này</p>
+          <p><NoteAltIcon style={{verticalAlign:'middle',marginRight:4}}/>Chưa có dữ liệu trong tháng này</p>
         </div>
       ) : (
         <>
@@ -94,15 +106,15 @@ export default function MoodStatistics({ diaries = [], year, month }) {
           <div className="stats-summary">
             <div className="stat-card">
               <div className="stat-number">{stats.totalDiaries}</div>
-              <div className="stat-label">📔 Nhật ký</div>
+              <div className="stat-label"><MenuBookIcon fontSize="small" style={{verticalAlign:'middle',marginRight:2}}/>Nhật ký</div>
             </div>
             <div className="stat-card">
               <div className="stat-number">{totalDays}</div>
-              <div className="stat-label">📅 Ngày ghi</div>
+              <div className="stat-label"><CalendarMonthIcon fontSize="small" style={{verticalAlign:'middle',marginRight:2}}/>Ngày ghi</div>
             </div>
             <div className="stat-card">
               <div className="stat-number">{stats.averageMood.toFixed(1)}</div>
-              <div className="stat-label">⭐ Trung bình</div>
+              <div className="stat-label"><StarIcon fontSize="small" style={{verticalAlign:'middle',marginRight:2}}/>Trung bình</div>
             </div>
           </div>
 
@@ -112,8 +124,9 @@ export default function MoodStatistics({ diaries = [], year, month }) {
             <div className="distribution-list">
               {[1, 2, 3, 4, 5].map(score => (
                 <div key={score} className="distribution-item">
-                  <div className="dist-label">
-                    {MOOD_LABELS[score]}
+                  <div className="dist-label" style={{display:'flex',alignItems:'center',gap:6}}>
+                    {MOOD_LABELS[score].icon}
+                    <span>{MOOD_LABELS[score].label}</span>
                   </div>
                   <div className="dist-bar-container">
                     <div 
@@ -139,11 +152,11 @@ export default function MoodStatistics({ diaries = [], year, month }) {
             <div className="breakdown-grid">
               {[1, 2, 3, 4, 5].map(score => (
                 <div key={score} className="breakdown-card" style={{ borderLeftColor: MOOD_COLORS[score] }}>
-                  <div className="breakdown-emoji" style={{ backgroundColor: MOOD_COLORS[score] + '20' }}>
-                    {MOOD_LABELS[score].split(' ')[0]}
+                  <div className="breakdown-emoji" style={{ backgroundColor: MOOD_COLORS[score] + '20', display:'flex',alignItems:'center',justifyContent:'center' }}>
+                    {MOOD_LABELS[score].icon}
                   </div>
                   <div className="breakdown-info">
-                    <div className="breakdown-title">{MOOD_LABELS[score]}</div>
+                    <div className="breakdown-title">{MOOD_LABELS[score].label}</div>
                     <div className="breakdown-count">{stats.moodDistribution[score]} ngày</div>
                   </div>
                 </div>

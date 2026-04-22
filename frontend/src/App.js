@@ -3,14 +3,14 @@ import axios from 'axios';
 import './App.css';
 
 // Pages
-import AuthPage from './pages/auth/AuthPage';
+import AuthPage from './pages/auth';
 import HomePage from './pages/shared/HomePage';
 import DiaryPage from './pages/student/DiaryPage';
 import AppointmentsPage from './pages/student/AppointmentsPage';
 import AIChatPage from './pages/shared/AIChatPage';
 import CommunityPage from './pages/shared/CommunityPage';
-import ManagementPage from './pages/counselor/ManagementPage';
-import AdminDashboard from './pages/admin/AdminDashboard';
+import ManagementPage from './pages/counselor';
+import AdminDashboard from './pages/admin';
 
 // Utils
 import { Icon, Icons } from './pages/constants';

@@ -507,14 +507,7 @@ export default function AppointmentsPage({ userRole }) {
                       <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600' }}>
                         {apt.counselor_name || 'Nhà tư vấn'}
                       </h4>
-                      <span style={{
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        background: statusInfo.bg,
-                        color: statusInfo.color
-                      }}>
+                      <span style={{fontSize: '11px',fontWeight: '600',padding: '4px 8px',borderRadius: '4px',background: statusInfo.bg,color: statusInfo.color}}>
                         {statusInfo.label}
                       </span>
                     </div>

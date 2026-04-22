@@ -1,6 +1,17 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Icon, Icons } from '../constants';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import CloseIcon from '@mui/icons-material/Close';
+import PersonIcon from '@mui/icons-material/Person';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import SpaIcon from '@mui/icons-material/Spa';
 
 const API = process.env.REACT_APP_API_URL;
 const api = axios.create({ baseURL: API });
@@ -63,8 +74,8 @@ export default function CommunityPage({ user }) {
 
   return (
     <div className="page community-page">
-      <div className="page-header"><h2>🌿 Cộng đồng</h2><p>Chia sẻ và kết nối cùng mọi người</p></div>
-      <button className="new-post-btn" onClick={() => setShowForm(!showForm)}>{showForm ? '✕ Đóng' : '✏️ Viết bài mới'}</button>
+      <div className="page-header"><h2><Diversity3Icon style={{verticalAlign:'middle',marginRight:6}}/>Cộng đồng</h2><p>Chia sẻ và kết nối cùng mọi người</p></div>
+      <button className="new-post-btn" onClick={() => setShowForm(!showForm)}>{showForm ? <><CloseIcon fontSize="small"/> Đóng</> : <><EditNoteIcon fontSize="small"/> Viết bài mới</>}</button>
       {showForm && (
         <div className="post-form">
           {user?.role === 'student' && (
@@ -84,13 +95,13 @@ export default function CommunityPage({ user }) {
         </div>
       )}
       <div className="posts-list">
-        {posts.length === 0 ? <div className="empty-state">🌱 Chưa có bài đăng nào!</div>
+        {posts.length === 0 ? <div className="empty-state"><SpaIcon style={{color:'#81c784',verticalAlign:'middle'}}/> Chưa có bài đăng nào!</div>
           : posts.map(post => {
             const t = tagConfig[post.tag] || tagConfig['chia-se'];
             return (
               <div key={post.id} className="post-card">
                 <div className="post-header">
-                  <span className="post-avatar">{post.role === 'counselor' ? '👩‍⚕️' : '🧑'}</span>
+                  <span className="post-avatar">{post.role === 'counselor' ? <LocalHospitalIcon fontSize="small" style={{color:'#1976d2'}}/> : <PersonIcon fontSize="small" style={{color:'#757575'}}/>}</span>
                   <div>
                     <span className="post-author">{post.username}</span>
                     {post.role === 'counselor' && <span className="counselor-badge">Tham vấn viên</span>}
@@ -100,17 +111,17 @@ export default function CommunityPage({ user }) {
                 </div>
                 <p className="post-content">{post.content}</p>
                 <div className="post-actions">
-                  <button className="action-btn" onClick={() => toggleLike(post.id)}>❤️ {post.like_count}</button>
-                  <button className="action-btn" onClick={() => toggleComments(post.id)}>💬 {post.comment_count}</button>
+                  <button className="action-btn" onClick={() => toggleLike(post.id)}>{post.liked ? <FavoriteIcon fontSize="small" style={{color:'#e53935'}}/> : <FavoriteBorderIcon fontSize="small"/>} {post.like_count}</button>
+                  <button className="action-btn" onClick={() => toggleComments(post.id)}><ChatBubbleOutlineIcon fontSize="small"/> {post.comment_count}</button>
                   {post.user_id === user?.id && (
-                    <button className="action-btn delete" onClick={async () => { if (window.confirm('Xoá bài?')) { await api.delete(`/api/posts/${post.id}`); loadPosts(); } }}>🗑️</button>
+                    <button className="action-btn delete" onClick={async () => { if (window.confirm('Xoá bài?')) { await api.delete(`/api/posts/${post.id}`); loadPosts(); } }}><DeleteIcon fontSize="small"/></button>
                   )}
                 </div>
                 {expandedPost === post.id && (
                   <div className="comments-section">
                     {(comments[post.id] || []).map((c, i) => (
                       <div key={i} className="comment-item">
-                        <span className="comment-avatar">{c.role === 'counselor' ? '👩‍⚕️' : '🧑'}</span>
+                        <span className="comment-avatar">{c.role === 'counselor' ? <LocalHospitalIcon fontSize="small" style={{color:'#1976d2'}}/> : <PersonIcon fontSize="small" style={{color:'#757575'}}/>}</span>
                         <div className="comment-body"><span className="comment-author">{c.username}</span><p>{c.content}</p></div>
                       </div>
                     ))}

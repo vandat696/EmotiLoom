@@ -1,6 +1,11 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Icon, Icons } from '../constants';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import PersonIcon from '@mui/icons-material/Person';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
 
 const API = process.env.REACT_APP_API_URL;
 const api = axios.create({ baseURL: API });
@@ -45,23 +50,23 @@ export default function AIChatPage() {
   return (
     <div className="page ai-chat-page">
       <div className="page-header chat-header">
-        <div><h2>🤖 Chat với AI</h2><p>Trợ lý tâm lý ảo EmotiLoom</p></div>
+        <div><h2><SmartToyIcon style={{verticalAlign:'middle',marginRight:6}}/>Chat với AI</h2><p>Trợ lý tâm lý ảo EmotiLoom</p></div>
         {messages.length > 0 && <button className="clear-btn" onClick={clearHistory}><Icon d={Icons.trash} size={15} /> Xoá</button>}
       </div>
       <div className="chat-container">
         <div className="chat-messages">
           {messages.length === 0 && (
-            <div className="chat-welcome"><span>🌸</span><h3>Xin chào! Mình là trợ lý AI</h3><p>Hãy chia sẻ cảm xúc, mình luôn lắng nghe!</p></div>
+            <div className="chat-welcome"><LocalFloristIcon style={{fontSize:32,color:'#81c784'}}/><h3>Xin chào! Mình là trợ lý AI</h3><p>Hãy chia sẻ cảm xúc, mình luôn lắng nghe!</p></div>
           )}
           {messages.map((m, i) => (
             <div key={i} className={`chat-bubble ${m.role}`}>
-              <div className="bubble-avatar">{m.role === 'user' ? '👤' : '🤖'}</div>
-              <div className="bubble-content">{m.content}</div>
+              <div className="bubble-avatar">{m.role === 'user' ? <PersonIcon style={{color:'#1976d2'}}/> : <SmartToyIcon style={{color:'#43a047'}}/>}</div>
+              <div className="bubble-content">{m.content === '❌ Có lỗi xảy ra!' ? <span style={{color:'#e53935'}}><ErrorOutlineIcon fontSize="small" style={{verticalAlign:'middle'}}/> Có lỗi xảy ra!</span> : m.content}</div>
             </div>
           ))}
           {loading && (
             <div className="chat-bubble assistant">
-              <div className="bubble-avatar">🤖</div>
+              <div className="bubble-avatar"><SmartToyIcon style={{color:'#43a047'}}/></div>
               <div className="bubble-content typing"><span /><span /><span /></div>
             </div>
           )}
